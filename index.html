@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HPU Control Box — Magswitch</title>
-<meta name="description" content="HPU Control Box — a compact, HMI-based controller for hydraulically actuated magnetic tooling. Jog, latching and cycle control, dual Hall closed-loop, plug-and-play M12.">
+<title>MagPilot — Control Boxes for Magnetic Tooling · Magswitch</title>
+<meta name="description" content="MagPilot is a family of compact, touchscreen control boxes for magnetic tooling. The B43 HPU Control Box and the B35 PPe Tool Smart Demo Box are available now; C35 and D35 are coming soon.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='%23000'/%3E%3Cpath%20d='M22%2014v20a10%2010%200%200%200%2020%200V14'%20fill='none'%20stroke='%23FFD200'%20stroke-width='7'%20stroke-linecap='round'/%3E%3Crect%20x='18.5'%20y='11'%20width='7'%20height='6'%20rx='1.5'%20fill='%23fff'/%3E%3Crect%20x='38.5'%20y='11'%20width='7'%20height='6'%20rx='1.5'%20fill='%23fff'/%3E%3C/svg%3E">
 <style>
   :root{
@@ -35,32 +35,46 @@
   }
   img{max-width:100%;display:block}
   a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
   .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
   .tnum{font-feature-settings:"tnum" 1;font-variant-numeric:tabular-nums}
+
+  /* ---------- View routing ---------- */
+  .view{display:none}
+  .view.active{display:block}
 
   /* ---------- Navigation ---------- */
   .nav{
     position:fixed;top:0;left:0;right:0;z-index:100;
-    transition:background .4s var(--ease),box-shadow .4s var(--ease),backdrop-filter .4s;
+    transition:background .4s var(--ease),box-shadow .4s var(--ease);
   }
   .nav-inner{
     max-width:1180px;margin:0 auto;padding:0 24px;height:52px;
-    display:flex;align-items:center;justify-content:space-between;gap:20px;
+    display:flex;align-items:center;justify-content:space-between;gap:18px;
   }
-  .nav-logo{display:flex;align-items:center;height:22px}
-  .nav-logo img{height:22px;width:auto}
-  .nav-logo .logo-light{display:none}
+  .nav-brand{display:flex;align-items:center;gap:10px;flex:none}
+  .nav-brand .brand-mark{height:20px;width:auto}
+  .nav-brand .brand-word{font-size:16px;font-weight:700;letter-spacing:-.01em}
   .nav.scrolled{background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(18px);
     -webkit-backdrop-filter:saturate(180%) blur(18px);box-shadow:0 1px 0 rgba(0,0,0,.06)}
-  .nav-links{display:flex;align-items:center;gap:28px}
-  .nav-link{font-size:13px;color:var(--ink);opacity:.88;transition:opacity .2s}
-  .nav-link:hover{opacity:1}
+  .nav-tabs{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .nav-tab{
+    font-size:13px;color:var(--ink);opacity:.7;padding:6px 13px;border-radius:980px;
+    border:0;background:transparent;cursor:pointer;transition:opacity .2s,background .2s,color .2s;
+  }
+  .nav-tab:hover{opacity:1}
+  .nav-tab.soon{color:var(--sub)}
+  .nav-tab.active{background:rgba(0,0,0,.08);opacity:1;font-weight:600}
   .nav-cta{
-    font-size:13px;font-weight:500;background:var(--ink);color:#fff;
+    flex:none;font-size:13px;font-weight:500;background:var(--ink);color:#fff;
     padding:7px 15px;border-radius:980px;transition:transform .2s var(--ease),background .2s;
   }
   .nav-cta:hover{transform:translateY(-1px)}
-  @media(max-width:760px){.nav-links .nav-link{display:none}}
+  @media(max-width:600px){
+    .nav-brand .brand-word{display:none}
+    .nav-tabs{gap:2px}
+    .nav-tab{padding:6px 9px;font-size:12px}
+  }
 
   /* ---------- Buttons ---------- */
   .btn{
@@ -74,17 +88,16 @@
   .btn-dark:hover{background:#000}
   .btn-yellow{background:var(--yellow);color:#000}
   .btn-yellow:hover{background:#ffe14d}
-  .btn-outline{border-color:currentColor;background:transparent;color:var(--ink)}
-  .btn-outline:hover{background:var(--ink);color:#fff}
-  .btn-outline-light{border-color:rgba(255,255,255,.55);color:#fff}
+  .btn-outline-light{border-color:rgba(255,255,255,.55);color:#fff;background:transparent}
   .btn-outline-light:hover{background:#fff;color:#000}
   .text-link{
     display:inline-flex;align-items:center;gap:6px;font-size:17px;font-weight:500;
-    color:#0a5ec9;transition:opacity .2s;
+    color:#0a5ec9;transition:opacity .2s;cursor:pointer;
   }
   .text-link .arr{transition:transform .2s var(--ease)}
   .text-link:hover{opacity:.82}
   .text-link:hover .arr{transform:translateX(3px)}
+  .text-link.on-dark{color:var(--yellow)}
 
   /* ---------- Hero ---------- */
   .hero{
@@ -106,9 +119,7 @@
   }
   .hero-sub .dim{color:var(--sub);font-weight:400}
   .hero-cta{margin:28px 0 10px;display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap}
-  .hero-media{
-    margin:26px auto 0;max-width:1180px;padding:0 24px;
-  }
+  .hero-media{margin:26px auto 0;max-width:1180px;padding:0 24px}
   .hero-media img{
     width:100%;height:auto;border-radius:18px;
     filter:drop-shadow(0 40px 60px rgba(0,0,0,.16));
@@ -119,6 +130,20 @@
   .hero-load .h-d{opacity:0;transform:translateY(40px) scale(.985);animation:riseImg 1.1s var(--ease) .3s forwards}
   @keyframes rise{to{opacity:1;transform:none}}
   @keyframes riseImg{to{opacity:1;transform:none}}
+
+  /* ---------- Family hero ---------- */
+  .fam-hero{padding:120px 0 56px;text-align:center;background:linear-gradient(180deg,#fbfbfd 0%,#ffffff 100%)}
+  .fam-bymark{display:inline-flex;align-items:center;gap:9px;margin-bottom:18px}
+  .fam-bymark img{height:18px;width:auto;opacity:.85}
+  .fam-bymark span{font-size:14px;font-weight:600;color:var(--sub);letter-spacing:.02em}
+  .fam-title{
+    font-size:clamp(56px,11vw,128px);font-weight:700;letter-spacing:-.035em;
+    line-height:.98;text-wrap:balance;
+  }
+  .fam-sub{margin:22px auto 0;max-width:680px;font-size:clamp(19px,2.4vw,25px);
+    font-weight:500;line-height:1.38;letter-spacing:-.01em}
+  .fam-sub .dim{color:var(--sub);font-weight:400}
+  .fam-note{margin-top:14px;font-size:16px;color:var(--sub)}
 
   /* ---------- Sections ---------- */
   .section{padding:110px 0}
@@ -132,62 +157,86 @@
     font-size:clamp(32px,5vw,58px);font-weight:700;letter-spacing:-.022em;
     line-height:1.06;text-wrap:balance;
   }
-  .sec-sub{
-    margin:16px auto 0;max-width:640px;font-size:clamp(17px,2vw,21px);
-    color:var(--sub);line-height:1.4;font-weight:400;
+  .sec-sub{margin:16px auto 0;max-width:640px;font-size:clamp(17px,2vw,21px);
+    color:var(--sub);line-height:1.4;font-weight:400}
+
+  /* ---------- Model lineup ---------- */
+  .lineup{padding:26px 0 100px}
+  .model-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+  .model-card{
+    background:var(--gray);border-radius:26px;overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .4s var(--ease),box-shadow .4s var(--ease);
   }
+  .model-card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -28px rgba(0,0,0,.28)}
+  .model-media{
+    height:248px;display:flex;align-items:center;justify-content:center;
+    padding:26px;background:linear-gradient(180deg,#ffffff,#f0f0f2);
+  }
+  .model-media img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 18px 26px rgba(0,0,0,.16))}
+  .model-body{padding:24px 22px 26px;display:flex;flex-direction:column;flex:1;text-align:center}
+  .model-tag{font-size:13px;font-weight:600;color:var(--sub);letter-spacing:.03em;margin-bottom:8px}
+  .model-name{font-size:25px;font-weight:700;letter-spacing:-.02em;line-height:1.08}
+  .model-desc{margin:10px auto 0;font-size:14.5px;color:var(--sub);line-height:1.45;min-height:64px}
+  .model-chips{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:16px 0 18px}
+  .chip{font-size:12px;font-weight:600;color:var(--ink);background:#fff;border:1px solid var(--line);
+    padding:5px 11px;border-radius:980px}
+  .model-cta{margin-top:auto}
+  .model-card.soon .model-media{background:linear-gradient(180deg,#f4f4f6,#e9e9ec)}
+  .model-card.soon .model-media img{filter:grayscale(.25) drop-shadow(0 16px 24px rgba(0,0,0,.12));opacity:.92}
+  .model-card.soon{cursor:pointer}
+  .soon-badge{
+    display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--ink);
+    background:#fff;border:1px solid var(--line);padding:9px 18px;border-radius:980px;cursor:pointer;
+    transition:background .2s,color .2s;
+  }
+  .model-card.soon:hover .soon-badge{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .soon-dot{width:7px;height:7px;border-radius:50%;background:var(--yellow-deep)}
+
+  /* ---------- Dark feature band ---------- */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;max-width:1000px;margin:0 auto}
+  .feat{display:flex;flex-direction:column;gap:12px}
+  .feat .side-ic{flex:0 0 42px;width:42px;height:42px;border-radius:12px;background:rgba(255,210,0,.14);
+    display:flex;align-items:center;justify-content:center}
+  .feat .side-ic svg{width:22px;height:22px;stroke:var(--yellow);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .feat h4{font-size:19px;font-weight:600;letter-spacing:-.01em}
+  .feat p{font-size:14.5px;color:var(--dark-sub);line-height:1.5}
 
   /* ---------- Compact stats ---------- */
-  .stat-row{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
-    max-width:920px;margin:0 auto;
-  }
-  .stat{
-    text-align:center;padding:34px 18px;border-radius:22px;
-    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
-  }
+  .stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:920px;margin:0 auto}
+  .stat{text-align:center;padding:34px 18px;border-radius:22px;
+    background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09)}
   .stat-num{font-size:clamp(40px,6vw,68px);font-weight:700;letter-spacing:-.03em;line-height:1;color:#fff}
   .stat-num .accent{color:var(--yellow)}
   .stat-label{margin-top:12px;font-size:15px;color:var(--dark-sub);line-height:1.4}
   .stat-label strong{display:block;color:#fff;font-size:16px;font-weight:600;margin-bottom:2px}
-  .dim-note{
-    text-align:center;margin-top:34px;font-size:15px;color:var(--dark-sub);
-  }
+  .dim-note{text-align:center;margin-top:34px;font-size:15px;color:var(--dark-sub)}
   .dim-note .from{color:#6e6e73;text-decoration:line-through}
 
   /* ---------- Screen showcase ---------- */
-  .screen-frame{
-    max-width:900px;margin:0 auto;border-radius:18px;overflow:hidden;
-    box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.12);
-    background:#0a0a0a;
-  }
+  .screen-frame{max-width:900px;margin:0 auto;border-radius:18px;overflow:hidden;
+    box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.12);background:#0a0a0a}
   .screen-frame img{width:100%;height:auto}
-  .screen-caption{
-    text-align:center;margin-top:18px;font-size:14px;color:var(--sub);
-  }
+  .screen-caption{text-align:center;margin-top:18px;font-size:14px;color:var(--sub)}
 
-  /* ---------- Feature cards (three modes) ---------- */
+  /* ---------- Feature cards ---------- */
   .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .card{
-    background:var(--white);border-radius:24px;padding:36px 28px;
-    border:1px solid var(--line);
+  .card{background:var(--white);border-radius:24px;padding:36px 28px;border:1px solid var(--line);
     display:flex;flex-direction:column;
-    transition:transform .35s var(--ease),box-shadow .35s var(--ease);
-  }
+    transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
   .gray .card{background:#fff}
   .card:hover{transform:translateY(-6px);box-shadow:0 26px 50px -22px rgba(0,0,0,.22)}
-  .card-ic{
-    width:54px;height:54px;border-radius:15px;background:var(--gray);
-    display:flex;align-items:center;justify-content:center;margin-bottom:22px;
-  }
+  .card-ic{width:54px;height:54px;border-radius:15px;background:var(--gray);
+    display:flex;align-items:center;justify-content:center;margin-bottom:22px}
   .card-ic svg{width:28px;height:28px;stroke:var(--ink);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-  .card-title{font-size:22px;font-weight:700;letter-spacing:-.015px;letter-spacing:-.01em}
+  .card-title{font-size:22px;font-weight:700;letter-spacing:-.01em}
   .card-tag{font-size:13px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:.06em;margin:6px 0 12px}
   .card-text{font-size:15.5px;color:var(--sub);line-height:1.5}
 
-  /* ---------- Interface (two screens) ---------- */
+  /* ---------- Interface (screens) ---------- */
   .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
-  .screen-block{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 60px -24px rgba(0,0,0,.7)}
+  .ui-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .screen-block{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.7);background:#0a0a0a}
   .screen-block img{width:100%;height:auto}
   .screen-block-label{margin-top:14px;font-size:14px;color:var(--dark-sub)}
   .screen-block-label strong{color:#fff;font-weight:600}
@@ -199,7 +248,7 @@
   .side-list h4{font-size:18px;font-weight:600;letter-spacing:-.01em;margin-bottom:3px}
   .side-list p{font-size:15px;color:var(--dark-sub);line-height:1.45}
 
-  /* ---------- Two-column value (MAC/MTC + Hall) ---------- */
+  /* ---------- Two-column value ---------- */
   .value-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
   .value-card{border-radius:24px;padding:40px 34px;border:1px solid var(--line);background:var(--white)}
   .value-card .big-ic{width:58px;height:58px;border-radius:16px;background:var(--ink);
@@ -213,10 +262,7 @@
 
   /* ---------- Safety grid ---------- */
   .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-  .safety{
-    background:#fff;border-radius:20px;padding:28px 22px;border:1px solid var(--line);
-    text-align:left;
-  }
+  .safety{background:#fff;border-radius:20px;padding:28px 22px;border:1px solid var(--line);text-align:left}
   .safety .s-ic{width:46px;height:46px;border-radius:13px;background:#fff7d0;
     display:flex;align-items:center;justify-content:center;margin-bottom:18px}
   .safety .s-ic svg{width:24px;height:24px;stroke:#000;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -225,13 +271,15 @@
 
   /* ---------- Specs ---------- */
   .spec-table{max-width:920px;margin:0 auto;border-top:1px solid var(--line)}
-  .spec-row{
-    display:grid;grid-template-columns:280px 1fr;gap:16px;
-    padding:19px 8px;border-bottom:1px solid var(--line);align-items:baseline;
-  }
+  .spec-row{display:grid;grid-template-columns:280px 1fr;gap:16px;
+    padding:19px 8px;border-bottom:1px solid var(--line);align-items:baseline}
   .spec-row dt{font-size:15px;font-weight:600;color:var(--ink)}
   .spec-row dd{font-size:16px;color:var(--sub);text-align:left}
   .spec-row dd strong{color:var(--ink);font-weight:600}
+
+  /* ---------- Family switch row ---------- */
+  .switch-family{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;align-items:center;margin-top:40px}
+  .switch-family .switch-label{font-size:15px;color:var(--dark-sub)}
 
   /* ---------- CTA ---------- */
   .cta{background:var(--dark);color:#fff;text-align:center;padding:120px 0}
@@ -248,10 +296,18 @@
   .foot-col h5{color:#fff;font-size:13px;font-weight:600;margin-bottom:12px}
   .foot-col a,.foot-col span{display:block;font-size:13.5px;color:var(--dark-sub);margin-bottom:8px;transition:color .2s}
   .foot-col a:hover{color:#fff}
-  .foot-bottom{
-    margin-top:42px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);
-    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#7a7a7f;
+  .foot-bottom{margin-top:42px;padding-top:20px;border-top:1px solid rgba(255,255,255,.1);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#7a7a7f}
+
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed;left:50%;bottom:34px;transform:translate(-50%,18px);
+    background:rgba(20,20,22,.92);color:#fff;font-size:14.5px;font-weight:500;
+    padding:13px 22px;border-radius:980px;box-shadow:0 16px 40px -12px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;z-index:200;transition:opacity .3s var(--ease),transform .3s var(--ease);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);white-space:nowrap;
   }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
 
   /* ---------- Reveal ---------- */
   .reveal{opacity:0;transform:translateY(30px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
@@ -259,25 +315,34 @@
   .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
 
   /* ---------- Responsive ---------- */
+  @media(max-width:980px){
+    .model-grid{grid-template-columns:1fr 1fr}
+    .ui-grid{grid-template-columns:1fr}
+  }
   @media(max-width:860px){
     .grid-4{grid-template-columns:1fr 1fr}
     .grid-3{grid-template-columns:1fr}
     .grid-2{grid-template-columns:1fr;gap:26px}
     .value-grid{grid-template-columns:1fr}
+    .feat-grid{grid-template-columns:1fr;gap:30px}
     .stat-row{grid-template-columns:1fr;gap:14px}
     .section{padding:78px 0}
     .spec-row{grid-template-columns:1fr;gap:4px}
     .spec-row dd{text-align:left}
+    .model-desc{min-height:0}
   }
-  @media(max-width:520px){
+  @media(max-width:560px){
+    .model-grid{grid-template-columns:1fr}
     .grid-4{grid-template-columns:1fr}
     .hero{padding-top:104px}
+    .fam-hero{padding-top:104px}
     .hero-cta{flex-direction:column;gap:12px;width:100%}
     .hero-cta .btn{width:100%}
     .cta-row{flex-direction:column}
     .cta-row .btn{width:100%}
+    .toast{white-space:normal;width:calc(100% - 48px);text-align:center}
   }
-  @media (prefers-reduced-motion:reduce){
+  @media(prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
     .reveal{opacity:1;transform:none;transition:none}
     .hero-load .h-a,.hero-load .h-b,.hero-load .h-c,.hero-load .h-d{animation:none;opacity:1;transform:none}
@@ -290,227 +355,573 @@
 <!-- ===== Navigation ===== -->
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a class="nav-logo" href="#top" aria-label="Magswitch">
-      <img src="assets/logo-dark.png" alt="Magswitch" class="logo-dark">
-      <img src="assets/logo-white.png" alt="Magswitch" class="logo-light">
+    <a class="nav-brand" href="#home" aria-label="MagPilot home">
+      <img src="assets/logo-dark.png" alt="Magswitch" class="brand-mark">
+      <span class="brand-word">MagPilot</span>
     </a>
-    <div class="nav-links">
-      <a class="nav-link" href="#design">Overview</a>
-      <a class="nav-link" href="#interface">Interface</a>
-      <a class="nav-link" href="#specs">Specs</a>
-      <a class="nav-cta" href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Manual</a>
+    <div class="nav-tabs" id="navTabs">
+      <a class="nav-tab" href="#b43" data-tab="b43">B43</a>
+      <a class="nav-tab" href="#b35" data-tab="b35">B35</a>
+      <button type="button" class="nav-tab soon" data-soon="C35">C35</button>
+      <button type="button" class="nav-tab soon" data-soon="D35">D35</button>
     </div>
+    <a class="nav-cta" id="navManual" href="tel:+8618268176813">Contact us</a>
   </div>
 </nav>
 
-<!-- ===== Hero ===== -->
-<header class="hero" id="top">
-  <div class="wrap">
-    <p class="hero-eyebrow h-a">MagPilot B43 &nbsp;·&nbsp; P/N 88002255</p>
-    <h1 class="hero-title h-b">HPU Control Box</h1>
-    <p class="hero-sub h-c">One compact touchscreen for hydraulically actuated magnetic tooling.
-      <span class="dim">Drive the valves, confirm position, run the cycle — all in your hand.</span></p>
-    <div class="hero-cta h-c">
-      <a class="btn btn-dark" href="#design">Explore the box</a>
-      <a class="text-link" href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual <span class="arr">›</span></a>
-    </div>
-  </div>
-  <div class="hero-media h-d">
-    <img src="assets/product.jpg" alt="HPU Control Box with a 4.3-inch color touchscreen, two M12 connectors and an E-stop on a light gray enclosure">
-  </div>
-</header>
+<!-- ============================================================ -->
+<!-- ===== VIEW: FAMILY OVERVIEW ===== -->
+<!-- ============================================================ -->
+<main class="view active" id="home">
 
-<!-- ===== Compact ===== -->
-<section class="section dark" id="design">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">Compact design</p>
-      <h2 class="sec-title">About 60% smaller, yet fully in control.</h2>
-      <p class="sec-sub">The HMI, PLC and valve-drive electronics now fit in a hand-sized enclosure — more compact, lightweight, and flexible to use on the production floor.</p>
+  <header class="fam-hero">
+    <div class="wrap">
+      <div class="fam-bymark h-a">
+        <span>by Magswitch</span>
+      </div>
+      <h1 class="fam-title h-b">MagPilot</h1>
+      <p class="fam-sub h-c">A family of compact, touchscreen control boxes for magnetic tooling.
+        <span class="dim">Demo, calibrate, drive and cycle — all in your hand.</span></p>
+      <p class="fam-note h-c">Two models available now, with more on the way.</p>
     </div>
-    <div class="stat-row">
-      <div class="stat reveal d1">
-        <div class="stat-num tnum">~60<span class="accent">%</span></div>
-        <div class="stat-label"><strong>Less enclosure volume</strong>redesigned from the previous build</div>
-      </div>
-      <div class="stat reveal d2">
-        <div class="stat-num tnum">158×90×46</div>
-        <div class="stat-label"><strong>mm footprint</strong>width × height × depth</div>
-      </div>
-      <div class="stat reveal d3">
-        <div class="stat-num tnum">425<span class="accent"> g</span></div>
-        <div class="stat-label"><strong>Net weight</strong>light enough to carry and reposition</div>
-      </div>
-    </div>
-    <p class="dim-note reveal">Previous enclosure <span class="from">175 × 125 × 75 mm</span> &nbsp;→&nbsp; current <span class="tnum">158 × 90 × 46 mm</span></p>
-  </div>
-</section>
+  </header>
 
-<!-- ===== Screen ===== -->
-<section class="section gray">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">The interface</p>
-      <h2 class="sec-title">A 4.3-inch color touchscreen.</h2>
-      <p class="sec-sub">Menu-driven, consistently dark and readable on the floor. Two clearly labeled entry screens take you straight to manual control or automatic cycle testing.</p>
-    </div>
-    <div class="screen-frame reveal">
-      <img src="assets/hmi-cover.png" alt="HMI cover screen with Cycle Test and Control entry buttons">
-    </div>
-    <p class="screen-caption reveal">HMI cover screen — Cycle Test and Control entry points.</p>
-  </div>
-</section>
+  <section class="lineup">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">The lineup</p>
+        <h2 class="sec-title">Choose your MagPilot.</h2>
+      </div>
+      <div class="model-grid">
 
-<!-- ===== Three modes ===== -->
-<section class="section">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">Three operating styles</p>
-      <h2 class="sec-title">Pick the mode that fits the moment.</h2>
-    </div>
-    <div class="grid-3">
-      <div class="card reveal d1">
-        <div class="card-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9 11h4a2 2 0 0 1 0 4H9"/></svg></div>
-        <h3 class="card-title">Jog</h3>
-        <p class="card-tag">Momentary</p>
-        <p class="card-text">Coils energize only while the button is held, for maintenance, setup and single-step verification.</p>
-      </div>
-      <div class="card reveal d2">
-        <div class="card-ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12l2 2 4-4"/></svg></div>
-        <h3 class="card-title">Turn On / Turn Off</h3>
-        <p class="card-tag">Latching</p>
-        <p class="card-text">One press opens the magnet (A), one press closes it (B). The state stays until the next command.</p>
-      </div>
-      <div class="card reveal d3">
-        <div class="card-ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></div>
-        <h3 class="card-title">Cycle</h3>
-        <p class="card-tag">Automatic</p>
-        <p class="card-text">Repeats A and B to a target count, with configurable hold and interval times and optional position confirmation.</p>
-      </div>
-    </div>
-  </div>
-</section>
+        <!-- B43 -->
+        <article class="model-card reveal d1">
+          <div class="model-media"><img src="assets/product.jpg" alt="MagPilot B43 HPU Control Box with a 4.3-inch color touchscreen"></div>
+          <div class="model-body">
+            <p class="model-tag">MagPilot B43 · 4.3-inch</p>
+            <h3 class="model-name">HPU Control Box</h3>
+            <p class="model-desc">Drives hydraulic valves, confirms position with dual Hall sensors, and runs automatic cycles on a 4.3-inch HMI.</p>
+            <div class="model-chips">
+              <span class="chip">4.3″ HMI</span>
+              <span class="chip tnum">P/N 88002255</span>
+            </div>
+            <div class="model-cta">
+              <a class="text-link" href="#b43">Learn more <span class="arr">›</span></a>
+            </div>
+          </div>
+        </article>
 
-<!-- ===== Interface ===== -->
-<section class="section dark" id="interface">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">HMI screens</p>
-      <h2 class="sec-title">Manual control and automatic testing.</h2>
-      <p class="sec-sub">Every voltage, threshold and valve state is visible. Set it once, then run it repeatably.</p>
-    </div>
-    <div class="grid-2">
-      <div class="reveal">
-        <div class="screen-block"><img src="assets/hmi-control.png" alt="Manual Control screen showing live sensor voltages, thresholds and valve status"></div>
-        <p class="screen-block-label"><strong>Manual Control</strong> — live Hall voltages (mV), open/close thresholds, valve status, Jog buttons and E-stop in one view.</p>
-      </div>
-      <div class="reveal d2">
-        <div class="screen-block"><img src="assets/hmi-cycle.png" alt="Cycle Test screen showing target count, hold and interval timing and closed-loop mode"></div>
-        <p class="screen-block-label"><strong>Cycle Test</strong> — target count, A/B hold and interval times, C follow (MTC only), and closed/open-loop mode.</p>
-      </div>
-    </div>
-  </div>
-</section>
+        <!-- B35 -->
+        <article class="model-card reveal d2">
+          <div class="model-media"><img src="assets/b35-product.jpg" alt="MagPilot B35 PPe Tool Smart Demo Box with a 3.5-inch color touchscreen showing NPN and PNP interfaces"></div>
+          <div class="model-body">
+            <p class="model-tag">MagPilot B35 · 3.5-inch</p>
+            <h3 class="model-name">PPe Tool Smart Demo Box</h3>
+            <p class="model-desc">A portable, battery-powered demo, calibration and cycle box for PPe30 and PPe50 tools.</p>
+            <div class="model-chips">
+              <span class="chip">3.5″ HMI</span>
+              <span class="chip tnum">P/N 88002257</span>
+            </div>
+            <div class="model-cta">
+              <a class="text-link" href="#b35">Learn more <span class="arr">›</span></a>
+            </div>
+          </div>
+        </article>
 
-<!-- ===== MAC/MTC + Hall ===== -->
-<section class="section">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">Two builds, one controller</p>
-      <h2 class="sec-title">MAC and MTC modes. Verified by two Hall sensors.</h2>
+        <!-- C35 -->
+        <article class="model-card soon reveal d3" data-soon="C35" role="button" tabindex="0" aria-label="MagPilot C35 coming soon">
+          <div class="model-media"><img src="assets/c35-coming.jpg" alt="MagPilot C35 control box"></div>
+          <div class="model-body">
+            <p class="model-tag">MagPilot C35 · 3.5-inch</p>
+            <h3 class="model-name">C35</h3>
+            <div class="model-chips"><span class="chip">Standard enclosure</span></div>
+            <div class="model-cta">
+              <span class="soon-badge"><span class="soon-dot"></span>Coming soon</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- D35 -->
+        <article class="model-card soon reveal d3" data-soon="D35" role="button" tabindex="0" aria-label="MagPilot D35 coming soon">
+          <div class="model-media"><img src="assets/d35-coming.jpg" alt="MagPilot D35 control box"></div>
+          <div class="model-body">
+            <p class="model-tag">MagPilot D35 · 3.5-inch</p>
+            <h3 class="model-name">D35</h3>
+            <div class="model-chips"><span class="chip">Full-featured enclosure</span></div>
+            <div class="model-cta">
+              <span class="soon-badge"><span class="soon-dot"></span>Coming soon</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
     </div>
-    <div class="value-grid">
-      <div class="value-card reveal d1">
-        <div class="big-ic"><svg viewBox="0 0 24 24"><path d="M6 3v6a4 4 0 0 0 4 4h4a4 4 0 0 1 4 4v4"/><circle cx="6" cy="3" r="1.8"/><circle cx="18" cy="21" r="1.8"/><path d="M15.5 18.5l2.5 2.5-2.5 2.5"/></svg></div>
-        <h3>MAC and MTC operating modes</h3>
-        <p>MAC (default) drives directional valves A and B to open and close the magnet. MTC adds relief valve C (Y3), which follows A and B — Valve C and Jog C appear only in the MTC build.</p>
-        <div class="vs">
-          <span>MAC<small>Valves A · B</small></span>
-          <span>MTC<small>Valves A · B · C</small></span>
+  </section>
+
+  <!-- Family band -->
+  <section class="section dark">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">One family</p>
+        <h2 class="sec-title">One HMI-first family, for every magnetic tool.</h2>
+        <p class="sec-sub">From the bench demo box to the production-floor valve controller, every MagPilot shares clear screens, clearly labeled connectors, and repeatable operation.</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat reveal d1">
+          <div class="side-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M7 10l3 3 4-4"/></svg></div>
+          <h4>HMI-first design</h4>
+          <p>Color touchscreens with consistent, menu-driven screens that are easy to learn and fast to operate.</p>
         </div>
-      </div>
-      <div class="value-card reveal d2">
-        <div class="big-ic"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 3v4h-4"/><circle cx="12" cy="12" r="2.2"/></svg></div>
-        <h3>Closed-loop position confirmation</h3>
-        <p>Two redundant Hall sensors monitor the same magnet; either one can confirm position. Closed-loop checks against adjustable thresholds, while open-loop runs on timers alone.</p>
-        <div class="vs">
-          <span>CLOSED<small>Sensor confirmed</small></span>
-          <span>OPEN<small>Timers only</small></span>
+        <div class="feat reveal d2">
+          <div class="side-ic"><svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="3.2"/><circle cx="17" cy="17" r="3.2"/><path d="M9.8 9.8l4.4 4.4"/></svg></div>
+          <h4>Plug-and-play M12</h4>
+          <p>Keyed A-coded M12 connectors and clearly labeled ports keep tool wiring simple and unmistakable.</p>
+        </div>
+        <div class="feat reveal d3">
+          <div class="side-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l6.6 2.8v6c0 4-2.7 6.9-6.6 8.2-3.9-1.3-6.6-4.2-6.6-8.2v-6z"/><path d="M12 8v4M12 15.5v.01"/></svg></div>
+          <h4>Built for the floor</h4>
+          <p>Compact enclosures, status alerts and a dedicated E-stop make every model ready for real production.</p>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ===== Safety ===== -->
-<section class="section gray">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">Safety built in</p>
-      <h2 class="sec-title">Protected on the production floor.</h2>
-    </div>
-    <div class="grid-4">
-      <div class="safety reveal d1">
-        <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l6.6 2.8v6c0 4-2.7 6.9-6.6 8.2-3.9-1.3-6.6-4.2-6.6-8.2v-6z"/><path d="M12 8v4M12 15.5v.01"/></svg></div>
-        <h4>E-stop</h4>
-        <p>Immediately de-energizes every output (Y1 / Y2 / Y3).</p>
-      </div>
-      <div class="safety reveal d2">
-        <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M4 4v3a4 4 0 0 0 4 4"/><path d="M4 4v2M4 13v4a3 3 0 0 0 3 3h0"/><path d="M20 4v3a4 4 0 0 1-4 4"/><path d="M20 4v2M20 13v4a3 3 0 0 1-3 3h0"/><path d="M12 9.5l-1.5 2.5h3L12 14.5"/></svg></div>
-        <h4>Sensor-disconnect detection</h4>
-        <p>A reading below 100 mV is treated as a disconnected sensor, so OPEN never triggers falsely.</p>
-      </div>
-      <div class="safety reveal d3">
-        <div class="s-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5v4M12 16.4v.01M9 3h6"/></svg></div>
-        <h4>Position-timeout alarm</h4>
-        <p>In closed-loop, no confirmation within the hold time stops the cycle and latches a fault.</p>
-      </div>
-      <div class="safety reveal">
-        <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M9 3v6M15 3v6"/><path d="M7 9h10v3a5 5 0 0 1-10 0z"/><path d="M12 17v4M8 21h8"/></svg></div>
-        <h4>Plug-and-play M12</h4>
-        <p>Two keyed connectors — one for outputs, one for sensors; no discrete inputs needed.</p>
+  <section class="cta">
+    <div class="wrap reveal">
+      <h2>Which MagPilot fits <span class="y">your tool?</span></h2>
+      <p>Contact us for the right model, the downloadable manuals, or the boxes coming next.</p>
+      <div class="cta-row">
+        <a class="btn btn-yellow" href="tel:+8618268176813">Contact us</a>
+        <a class="text-link" href="https://magswitch.com" target="_blank" rel="noopener">magswitch.com <span class="arr">›</span></a>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ===== Specs ===== -->
-<section class="section" id="specs">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <p class="sec-eyebrow">Specifications</p>
-      <h2 class="sec-title">The numbers.</h2>
-    </div>
-    <dl class="spec-table reveal">
-      <div class="spec-row"><dt>Product Name</dt><dd><strong>HPU Control Box</strong></dd></div>
-      <div class="spec-row"><dt>Part Number (P/N)</dt><dd class="tnum">88002255</dd></div>
-      <div class="spec-row"><dt>Series / Model</dt><dd>MagPilot B43</dd></div>
-      <div class="spec-row"><dt>Enclosure (W × H × D)</dt><dd class="tnum">158 × 90 × 46 mm &nbsp;(6.22 × 3.54 × 1.81 in)</dd></div>
-      <div class="spec-row"><dt>Display</dt><dd>4.3-in color HMI, 480 × 260 pixels</dd></div>
-      <div class="spec-row"><dt>Supply Voltage / Current</dt><dd class="tnum">24 V DC &nbsp;·&nbsp; 3 A max</dd></div>
-      <div class="spec-row"><dt>Digital Outputs</dt><dd>Y1 Valve A (OPEN) · Y2 Valve B (CLOSE) · Y3 Valve C (MTC only)</dd></div>
-      <div class="spec-row"><dt>Analog Inputs</dt><dd class="tnum">2 × 0–5 V Hall inputs (AD0 / AD1)</dd></div>
-      <div class="spec-row"><dt>Position Sensors</dt><dd>2 × 270758 Hall sensors, 24 V, 0–5 V, 3-wire</dd></div>
-      <div class="spec-row"><dt>Connectors</dt><dd>2 × M12, 5-pin, A-coded</dd></div>
-      <div class="spec-row"><dt>Enclosure Rating</dt><dd>IP54 (dust-protected, splash-resistant)</dd></div>
-      <div class="spec-row"><dt>Net Weight</dt><dd class="tnum">425 g (0.94 lb)</dd></div>
-      <div class="spec-row"><dt>Operating Temperature</dt><dd class="tnum">-10 °C to +50 °C (14–122 °F)</dd></div>
-      <div class="spec-row"><dt>Firmware</dt><dd class="tnum">V3.1.1</dd></div>
-    </dl>
-  </div>
-</section>
+</main>
 
-<!-- ===== CTA ===== -->
-<section class="cta">
-  <div class="wrap reveal">
-    <h2>Ready to take <span class="y">control</span>?</h2>
-    <p>Download the full manual for wiring, HMI operation, alarms and safety guidance.</p>
-    <div class="cta-row">
-      <a class="btn btn-yellow" href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual (PDF)</a>
-      <a class="btn btn-outline-light" href="tel:+8618268176813">Contact us</a>
+<!-- ============================================================ -->
+<!-- ===== VIEW: B43 ===== -->
+<!-- ============================================================ -->
+<main class="view" id="b43">
+
+  <header class="hero" id="b43-top">
+    <div class="wrap">
+      <p class="hero-eyebrow h-a">MagPilot B43 &nbsp;·&nbsp; P/N 88002255</p>
+      <h1 class="hero-title h-b">HPU Control Box</h1>
+      <p class="hero-sub h-c">One compact touchscreen for hydraulically actuated magnetic tooling.
+        <span class="dim">Drive the valves, confirm position, run the cycle — all in your hand.</span></p>
+      <div class="hero-cta h-c">
+        <a class="btn btn-dark" href="#design">Explore the box</a>
+        <a class="text-link" href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual <span class="arr">›</span></a>
+      </div>
     </div>
-  </div>
-</section>
+    <div class="hero-media h-d">
+      <img src="assets/product.jpg" alt="HPU Control Box with a 4.3-inch color touchscreen, two M12 connectors and an E-stop on a light gray enclosure">
+    </div>
+  </header>
+
+  <section class="section dark" id="design">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Compact design</p>
+        <h2 class="sec-title">About 60% smaller, yet fully in control.</h2>
+        <p class="sec-sub">The HMI, PLC and valve-drive electronics now fit in a hand-sized enclosure — more compact, lightweight, and flexible to use on the production floor.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat reveal d1">
+          <div class="stat-num tnum">~60<span class="accent">%</span></div>
+          <div class="stat-label"><strong>Less enclosure volume</strong>redesigned from the previous build</div>
+        </div>
+        <div class="stat reveal d2">
+          <div class="stat-num tnum">158×90×46</div>
+          <div class="stat-label"><strong>mm footprint</strong>width × height × depth</div>
+        </div>
+        <div class="stat reveal d3">
+          <div class="stat-num tnum">425<span class="accent"> g</span></div>
+          <div class="stat-label"><strong>Net weight</strong>light enough to carry and reposition</div>
+        </div>
+      </div>
+      <p class="dim-note reveal">Previous enclosure <span class="from">175 × 125 × 75 mm</span> &nbsp;→&nbsp; current <span class="tnum">158 × 90 × 46 mm</span></p>
+    </div>
+  </section>
+
+  <section class="section gray">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">The interface</p>
+        <h2 class="sec-title">A 4.3-inch color touchscreen.</h2>
+        <p class="sec-sub">Menu-driven, consistently dark and readable on the floor. Two clearly labeled entry screens take you straight to manual control or automatic cycle testing.</p>
+      </div>
+      <div class="screen-frame reveal">
+        <img src="assets/hmi-cover.png" alt="HMI cover screen with Cycle Test and Control entry buttons">
+      </div>
+      <p class="screen-caption reveal">HMI cover screen — Cycle Test and Control entry points.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Three operating styles</p>
+        <h2 class="sec-title">Pick the mode that fits the moment.</h2>
+      </div>
+      <div class="grid-3">
+        <div class="card reveal d1">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M9 11h4a2 2 0 0 1 0 4H9"/></svg></div>
+          <h3 class="card-title">Jog</h3>
+          <p class="card-tag">Momentary</p>
+          <p class="card-text">Coils energize only while the button is held, for maintenance, setup and single-step verification.</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 12l2 2 4-4"/></svg></div>
+          <h3 class="card-title">Turn On / Turn Off</h3>
+          <p class="card-tag">Latching</p>
+          <p class="card-text">One press opens the magnet (A), one press closes it (B). The state stays until the next command.</p>
+        </div>
+        <div class="card reveal d3">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></div>
+          <h3 class="card-title">Cycle</h3>
+          <p class="card-tag">Automatic</p>
+          <p class="card-text">Repeats A and B to a target count, with configurable hold and interval times and optional position confirmation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section dark" id="interface">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">HMI screens</p>
+        <h2 class="sec-title">Manual control and automatic testing.</h2>
+        <p class="sec-sub">Every voltage, threshold and valve state is visible. Set it once, then run it repeatably.</p>
+      </div>
+      <div class="grid-2">
+        <div class="reveal">
+          <div class="screen-block"><img src="assets/hmi-control.png" alt="Manual Control screen showing live sensor voltages, thresholds and valve status"></div>
+          <p class="screen-block-label"><strong>Manual Control</strong> — live Hall voltages (mV), open/close thresholds, valve status, Jog buttons and E-stop in one view.</p>
+        </div>
+        <div class="reveal d2">
+          <div class="screen-block"><img src="assets/hmi-cycle.png" alt="Cycle Test screen showing target count, hold and interval timing and closed-loop mode"></div>
+          <p class="screen-block-label"><strong>Cycle Test</strong> — target count, A/B hold and interval times, C follow (MTC only), and closed/open-loop mode.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Two builds, one controller</p>
+        <h2 class="sec-title">MAC and MTC modes. Verified by two Hall sensors.</h2>
+      </div>
+      <div class="value-grid">
+        <div class="value-card reveal d1">
+          <div class="big-ic"><svg viewBox="0 0 24 24"><path d="M6 3v6a4 4 0 0 0 4 4h4a4 4 0 0 1 4 4v4"/><circle cx="6" cy="3" r="1.8"/><circle cx="18" cy="21" r="1.8"/><path d="M15.5 18.5l2.5 2.5-2.5 2.5"/></svg></div>
+          <h3>MAC and MTC operating modes</h3>
+          <p>MAC (default) drives directional valves A and B to open and close the magnet. MTC adds relief valve C (Y3), which follows A and B — Valve C and Jog C appear only in the MTC build.</p>
+          <div class="vs">
+            <span>MAC<small>Valves A · B</small></span>
+            <span>MTC<small>Valves A · B · C</small></span>
+          </div>
+        </div>
+        <div class="value-card reveal d2">
+          <div class="big-ic"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 3v4h-4"/><circle cx="12" cy="12" r="2.2"/></svg></div>
+          <h3>Closed-loop position confirmation</h3>
+          <p>Two redundant Hall sensors monitor the same magnet; either one can confirm position. Closed-loop checks against adjustable thresholds, while open-loop runs on timers alone.</p>
+          <div class="vs">
+            <span>CLOSED<small>Sensor confirmed</small></span>
+            <span>OPEN<small>Timers only</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gray">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Safety built in</p>
+        <h2 class="sec-title">Protected on the production floor.</h2>
+      </div>
+      <div class="grid-4">
+        <div class="safety reveal d1">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M12 2.8l6.6 2.8v6c0 4-2.7 6.9-6.6 8.2-3.9-1.3-6.6-4.2-6.6-8.2v-6z"/><path d="M12 8v4M12 15.5v.01"/></svg></div>
+          <h4>E-stop</h4>
+          <p>Immediately de-energizes every output (Y1 / Y2 / Y3).</p>
+        </div>
+        <div class="safety reveal d2">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M4 4v3a4 4 0 0 0 4 4"/><path d="M4 4v2M4 13v4a3 3 0 0 0 3 3h0"/><path d="M20 4v3a4 4 0 0 1-4 4"/><path d="M20 4v2M20 13v4a3 3 0 0 1-3 3h0"/><path d="M12 9.5l-1.5 2.5h3L12 14.5"/></svg></div>
+          <h4>Sensor-disconnect detection</h4>
+          <p>A reading below 100 mV is treated as a disconnected sensor, so OPEN never triggers falsely.</p>
+        </div>
+        <div class="safety reveal d3">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5v4M12 16.4v.01M9 3h6"/></svg></div>
+          <h4>Position-timeout alarm</h4>
+          <p>In closed-loop, no confirmation within the hold time stops the cycle and latches a fault.</p>
+        </div>
+        <div class="safety reveal">
+          <div class="s-ic"><svg viewBox="0 0 24 24"><path d="M9 3v6M15 3v6"/><path d="M7 9h10v3a5 5 0 0 1-10 0z"/><path d="M12 17v4M8 21h8"/></svg></div>
+          <h4>Plug-and-play M12</h4>
+          <p>Two keyed connectors — one for outputs, one for sensors; no discrete inputs needed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="specs">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Specifications</p>
+        <h2 class="sec-title">The numbers.</h2>
+      </div>
+      <dl class="spec-table reveal">
+        <div class="spec-row"><dt>Product Name</dt><dd><strong>HPU Control Box</strong></dd></div>
+        <div class="spec-row"><dt>Part Number (P/N)</dt><dd class="tnum">88002255</dd></div>
+        <div class="spec-row"><dt>Series / Model</dt><dd>MagPilot B43</dd></div>
+        <div class="spec-row"><dt>Enclosure (W × H × D)</dt><dd class="tnum">158 × 90 × 46 mm &nbsp;(6.22 × 3.54 × 1.81 in)</dd></div>
+        <div class="spec-row"><dt>Display</dt><dd>4.3-in color HMI, 480 × 260 pixels</dd></div>
+        <div class="spec-row"><dt>Supply Voltage / Current</dt><dd class="tnum">24 V DC &nbsp;·&nbsp; 3 A max</dd></div>
+        <div class="spec-row"><dt>Digital Outputs</dt><dd>Y1 Valve A (OPEN) · Y2 Valve B (CLOSE) · Y3 Valve C (MTC only)</dd></div>
+        <div class="spec-row"><dt>Analog Inputs</dt><dd class="tnum">2 × 0–5 V Hall inputs (AD0 / AD1)</dd></div>
+        <div class="spec-row"><dt>Position Sensors</dt><dd>2 × 270758 Hall sensors, 24 V, 0–5 V, 3-wire</dd></div>
+        <div class="spec-row"><dt>Connectors</dt><dd>2 × M12, 5-pin, A-coded</dd></div>
+        <div class="spec-row"><dt>Enclosure Rating</dt><dd>IP54 (dust-protected, splash-resistant)</dd></div>
+        <div class="spec-row"><dt>Net Weight</dt><dd class="tnum">425 g (0.94 lb)</dd></div>
+        <div class="spec-row"><dt>Operating Temperature</dt><dd class="tnum">-10 °C to +50 °C (14–122 °F)</dd></div>
+        <div class="spec-row"><dt>Firmware</dt><dd class="tnum">V3.1.1</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap reveal">
+      <h2>Ready to take <span class="y">control</span>?</h2>
+      <p>Download the full manual for wiring, HMI operation, alarms and safety guidance.</p>
+      <div class="cta-row">
+        <a class="btn btn-yellow" href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual (PDF)</a>
+        <a class="btn btn-outline-light" href="tel:+8618268176813">Contact us</a>
+      </div>
+      <div class="switch-family">
+        <span class="switch-label">See the rest of the family:</span>
+        <a class="text-link on-dark" href="#home">All MagPilot models <span class="arr">›</span></a>
+        <a class="text-link on-dark" href="#b35">MagPilot B35 <span class="arr">›</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- ===== VIEW: B35 ===== -->
+<!-- ============================================================ -->
+<main class="view" id="b35">
+
+  <header class="hero" id="b35-top">
+    <div class="wrap">
+      <p class="hero-eyebrow h-a">MagPilot B35 &nbsp;·&nbsp; P/N 88002257</p>
+      <h1 class="hero-title h-b">PPe Tool Smart Demo Box</h1>
+      <p class="hero-sub h-c">Get familiar with every PPe30 and PPe50 function.
+        <span class="dim">A portable, battery-powered demo, calibration and cycle box.</span></p>
+      <div class="hero-cta h-c">
+        <a class="btn btn-dark" href="#b35-power">Explore the box</a>
+        <a class="text-link" href="assets/PPe_Smart_Demo_Box_Manual.pdf" download="PPe_Smart_Demo_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual <span class="arr">›</span></a>
+      </div>
+    </div>
+    <div class="hero-media h-d">
+      <img src="assets/b35-product.jpg" alt="PPe Tool Smart Demo Box with a 3.5-inch color touchscreen displaying NPN and PNP interfaces, three M12 connectors and an E-stop">
+    </div>
+  </header>
+
+  <!-- Battery -->
+  <section class="section dark" id="b35-power">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Battery-powered</p>
+        <h2 class="sec-title">A demo box that goes anywhere.</h2>
+        <p class="sec-sub">A built-in large-capacity lithium battery and a compact body let you demo, calibrate and cycle PPe tools on the bench, the line, or in the field — no power outlet required.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat reveal d1">
+          <div class="stat-num tnum">5<span class="accent"> h</span></div>
+          <div class="stat-label"><strong>With PPe30</strong>continuous operating time</div>
+        </div>
+        <div class="stat reveal d2">
+          <div class="stat-num tnum">3<span class="accent"> h</span></div>
+          <div class="stat-label"><strong>With PPe50</strong>continuous operating time</div>
+        </div>
+        <div class="stat reveal d3">
+          <div class="stat-num tnum">2800<span class="accent"> mAh</span></div>
+          <div class="stat-label"><strong>Built-in battery</strong>maximum 5 A output</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Four interfaces -->
+  <section class="section gray" id="b35-screen">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Four interfaces</p>
+        <h2 class="sec-title">One 3.5-inch screen. Four interfaces.</h2>
+        <p class="sec-sub">Set the logic and interface to match each tool — NPN or PNP, Version A2 or A4. The box detects and displays the active logic automatically.</p>
+      </div>
+      <div class="screen-frame contain reveal">
+        <img src="assets/b35-ui-operation.png" alt="Operation screen showing NPN-A2, NPN-A4, PNP-A2 and PNP-A4 interface selection">
+      </div>
+      <p class="screen-caption reveal">Operation screen — select NPN / PNP and Version A2 / A4.</p>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="b35-features">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">What it does</p>
+        <h2 class="sec-title">Everything a PPe tool needs, on one box.</h2>
+      </div>
+      <div class="grid-3">
+        <div class="card reveal d1">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><path d="M7 8h10M7 12h10M7 16h6"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg></div>
+          <h3 class="card-title">NPN / PNP dual logic</h3>
+          <p class="card-tag">Auto-detected</p>
+          <p class="card-text">Flip the logic switch to match the tool; the box auto-detects and displays NPN or PNP on screen.</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg></div>
+          <h3 class="card-title">A2 / A4 interface</h3>
+          <p class="card-tag">Freely switchable</p>
+          <p class="card-text">Move between the Version A2 and A4 operation interfaces to match the tool housing.</p>
+        </div>
+        <div class="card reveal d3">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+          <h3 class="card-title">Magnet on/off &amp; alert</h3>
+          <p class="card-tag">Status display</p>
+          <p class="card-text">Drive the magnet fully on and off, see the live state, and get an alert for abnormal tool conditions.</p>
+        </div>
+        <div class="card reveal d1">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><path d="M12 21a9 9 0 1 0-9-9"/><path d="M12 7v5l3 3"/></svg></div>
+          <h3 class="card-title">Manual &amp; auto calibration</h3>
+          <p class="card-tag">20-second auto</p>
+          <p class="card-text">Calibrate manually, or run one-touch Auto Calibrate with a 20-second countdown.</p>
+        </div>
+        <div class="card reveal d2">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></div>
+          <h3 class="card-title">Cycle testing</h3>
+          <p class="card-tag">Custom interval</p>
+          <p class="card-text">Set a custom cycle interval, watch the live count and elapsed time, then reset when done.</p>
+        </div>
+        <div class="card reveal d3">
+          <div class="card-ic"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="11" rx="2"/><path d="M22 10v5"/><path d="M6 10v5M10 10v5"/></svg></div>
+          <h3 class="card-title">Portable power</h3>
+          <p class="card-tag">Cordless</p>
+          <p class="card-text">The 2800 mAh battery runs up to 5 hours with PPe30 and 3 hours with PPe50.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three UI screens -->
+  <section class="section dark" id="b35-ui">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">On the screen</p>
+        <h2 class="sec-title">Demo, calibrate, and cycle.</h2>
+        <p class="sec-sub">Clear, consistent screens walk through every PPe function without a laptop.</p>
+      </div>
+      <div class="ui-grid">
+        <div class="reveal d1">
+          <div class="screen-block"><img src="assets/b35-ui-operation.png" alt="Operation screen"></div>
+          <p class="screen-block-label"><strong>Operation</strong> — NPN / PNP × A2 / A4, magnet on/off and live status.</p>
+        </div>
+        <div class="reveal d2">
+          <div class="screen-block"><img src="assets/b35-ui-calibration.png" alt="Calibration screen with a 20-second countdown"></div>
+          <p class="screen-block-label"><strong>Calibration</strong> — Auto Calibrate with a 20-second countdown.</p>
+        </div>
+        <div class="reveal d3">
+          <div class="screen-block"><img src="assets/b35-ui-cycle.png" alt="Cycle screen with cycle count and elapsed time"></div>
+          <p class="screen-block-label"><strong>Cycle</strong> — live cycle count, elapsed time and reset.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ports -->
+  <section class="section" id="b35-ports">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Connections</p>
+        <h2 class="sec-title">Every port, clearly labeled.</h2>
+      </div>
+      <div class="grid-2">
+        <div class="reveal">
+          <img src="assets/b35-ports.jpg" alt="Top view of the PPe Tool Smart Demo Box showing three M12 connectors labeled A, C and B, the NPN/PNP switch, 24 V and charging ports" style="border-radius:18px;box-shadow:0 30px 70px -22px rgba(0,0,0,.28);border:1px solid var(--line)">
+        </div>
+        <ul class="side-list reveal d2" style="color:var(--ink)">
+          <li>
+            <div class="side-ic" style="background:var(--gray)"><svg viewBox="0 0 24 24" style="stroke:var(--ink)"><circle cx="7" cy="7" r="3.2"/><circle cx="17" cy="17" r="3.2"/><path d="M9.8 9.8l4.4 4.4"/></svg></div>
+            <div><h4 style="color:var(--ink)">Three M12 outputs — A / C / B</h4><p style="color:var(--sub)">Male M12 5-pin, 4-pin and 3-pin connectors, all A-coded and clearly labeled.</p></div>
+          </li>
+          <li>
+            <div class="side-ic" style="background:var(--gray)"><svg viewBox="0 0 24 24" style="stroke:var(--ink)"><path d="M4 8h16M4 16h16M8 8l-2 4 2 4M16 8l2 4-2 4"/></svg></div>
+            <div><h4 style="color:var(--ink)">NPN / PNP switch</h4><p style="color:var(--sub)">A physical toggle sets output logic; the active logic is shown on screen.</p></div>
+          </li>
+          <li>
+            <div class="side-ic" style="background:var(--gray)"><svg viewBox="0 0 24 24" style="stroke:var(--ink)"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+            <div><h4 style="color:var(--ink)">24 V DC power</h4><p style="color:var(--sub)">Power the tool at 2 A @ 24 V DC, with a dedicated 1 A @ 24 V charging port.</p></div>
+          </li>
+          <li>
+            <div class="side-ic" style="background:var(--gray)"><svg viewBox="0 0 24 24" style="stroke:var(--ink)"><path d="M12 2.8l6.6 2.8v6c0 4-2.7 6.9-6.6 8.2-3.9-1.3-6.6-4.2-6.6-8.2v-6z"/><path d="M12 8v4M12 15.5v.01"/></svg></div>
+            <div><h4 style="color:var(--ink)">E-stop &amp; charge level</h4><p style="color:var(--sub)">Top-mounted mushroom E-stop and an on-panel charge-level readout.</p></div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specs -->
+  <section class="section gray" id="b35-specs">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <p class="sec-eyebrow">Specifications</p>
+        <h2 class="sec-title">The numbers.</h2>
+      </div>
+      <dl class="spec-table reveal">
+        <div class="spec-row"><dt>Product Name</dt><dd><strong>PPe Tool Smart Demo Box</strong></dd></div>
+        <div class="spec-row"><dt>Part Number (P/N)</dt><dd class="tnum">88002257</dd></div>
+        <div class="spec-row"><dt>Series / Model</dt><dd>MagPilot B35</dd></div>
+        <div class="spec-row"><dt>Compatible Tools</dt><dd>PPe30 · PPe50</dd></div>
+        <div class="spec-row"><dt>Enclosure (W × H × D)</dt><dd class="tnum">158 × 90 × 46 mm (6.22 × 3.54 × 1.81 in)</dd></div>
+        <div class="spec-row"><dt>Display</dt><dd>3.5-in color HMI</dd></div>
+        <div class="spec-row"><dt>Logic / Interface</dt><dd>NPN / PNP · Version A2 / A4</dd></div>
+        <div class="spec-row"><dt>Battery</dt><dd class="tnum">2800 mAh built-in lithium · maximum 5 A</dd></div>
+        <div class="spec-row"><dt>Continuous Operating Time</dt><dd class="tnum">PPe30 ≈ 5 h · PPe50 ≈ 3 h</dd></div>
+        <div class="spec-row"><dt>Power Supply</dt><dd class="tnum">2 A @ 24 V DC</dd></div>
+        <div class="spec-row"><dt>Charger</dt><dd class="tnum">1 A @ 24 V DC</dd></div>
+        <div class="spec-row"><dt>Connectors</dt><dd>Male M12, 5-pin / 4-pin / 3-pin, A-coded</dd></div>
+        <div class="spec-row"><dt>Net Weight</dt><dd class="tnum">0.69 kg (1.52 lb)</dd></div>
+        <div class="spec-row"><dt>Firmware</dt><dd class="tnum">V3.1.4</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap reveal">
+      <h2>Know every PPe function, <span class="y">hands-on.</span></h2>
+      <p>Download the full PPe Tool Smart Demo Box manual for interfaces, calibration and cycle setup.</p>
+      <div class="cta-row">
+        <a class="btn btn-yellow" href="assets/PPe_Smart_Demo_Box_Manual.pdf" download="PPe_Smart_Demo_Box_Manual.pdf" target="_blank" rel="noopener">Download the manual (PDF)</a>
+        <a class="btn btn-outline-light" href="tel:+8618268176813">Contact us</a>
+      </div>
+      <div class="switch-family">
+        <span class="switch-label">See the rest of the family:</span>
+        <a class="text-link on-dark" href="#home">All MagPilot models <span class="arr">›</span></a>
+        <a class="text-link on-dark" href="#b43">MagPilot B43 <span class="arr">›</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
 
 <!-- ===== Footer ===== -->
 <footer>
@@ -518,16 +929,21 @@
     <div class="foot-top">
       <div class="foot-logo"><img src="assets/logo-white.png" alt="Magswitch"></div>
       <div class="foot-col">
-        <h5>Product</h5>
-        <span>HPU Control Box</span>
-        <span>MagPilot B43</span>
-        <span class="tnum">P/N 88002255 · V3.1.1</span>
+        <h5>MagPilot family</h5>
+        <a href="#b43">HPU Control Box — MagPilot B43</a>
+        <a href="#b35">PPe Tool Smart Demo Box — MagPilot B35</a>
+        <span>C35 · D35 — coming soon</span>
+      </div>
+      <div class="foot-col">
+        <h5>Manuals</h5>
+        <a href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">HPU Control Box (PDF)</a>
+        <a href="assets/PPe_Smart_Demo_Box_Manual.pdf" download="PPe_Smart_Demo_Box_Manual.pdf" target="_blank" rel="noopener">PPe Tool Smart Demo Box (PDF)</a>
       </div>
       <div class="foot-col">
         <h5>Contact</h5>
         <a href="https://magswitch.com" target="_blank" rel="noopener">magswitch.com</a>
         <a href="tel:+8618268176813">+86 182 6817 6813</a>
-        <a href="assets/HPU_Control_Box_Manual.pdf" download="HPU_Control_Box_Manual.pdf" target="_blank" rel="noopener">Product manual (PDF)</a>
+        <a href="#home">MagPilot lineup</a>
       </div>
     </div>
     <div class="foot-bottom">
@@ -537,28 +953,81 @@
   </div>
 </footer>
 
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
   (function(){
     var nav = document.getElementById('nav');
+    var tabs = document.querySelectorAll('[data-tab]');
+    var navManual = document.getElementById('navManual');
+    var views = {
+      home: document.getElementById('home'),
+      b43: document.getElementById('b43'),
+      b35: document.getElementById('b35')
+    };
+    var manual = {
+      home: {label:'Contact us', href:'tel:+8618268176813', dl:null},
+      b43:  {label:'Manual', href:'assets/HPU_Control_Box_Manual.pdf', dl:'HPU_Control_Box_Manual.pdf'},
+      b35:  {label:'Manual', href:'assets/PPe_Smart_Demo_Box_Manual.pdf', dl:'PPe_Smart_Demo_Box_Manual.pdf'}
+    };
+
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'}) : null;
+
+    function arm(scope){
+      var rs = scope.querySelectorAll('.reveal');
+      rs.forEach(function(el){
+        el.classList.remove('in');
+        if(reduce || !io){ el.classList.add('in'); } else { io.observe(el); }
+      });
+    }
+
+    function show(name){
+      if(!views[name]){ name = 'home'; }
+      Object.keys(views).forEach(function(k){
+        if(views[k]){ views[k].classList.toggle('active', k===name); }
+      });
+      tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab')===name); });
+      var m = manual[name] || manual.home;
+      navManual.textContent = m.label;
+      navManual.setAttribute('href', m.href);
+      if(m.dl){ navManual.setAttribute('download', m.dl); navManual.setAttribute('target','_blank'); navManual.setAttribute('rel','noopener'); }
+      else { navManual.removeAttribute('download'); navManual.removeAttribute('target'); navManual.removeAttribute('rel'); }
+      if(window.scrollY > 24){ nav.classList.add('scrolled'); } else { nav.classList.remove('scrolled'); }
+      window.scrollTo(0,0);
+      var scope = views[name];
+      if(scope){ requestAnimationFrame(function(){ requestAnimationFrame(function(){ arm(scope); }); }); }
+    }
+
+    function route(){
+      var h = (location.hash || '').replace('#','');
+      if(['home','b43','b35'].indexOf(h) !== -1){ show(h); }
+    }
+    window.addEventListener('hashchange', route);
+
     function onScroll(){
       if(window.scrollY > 24){ nav.classList.add('scrolled'); }
       else{ nav.classList.remove('scrolled'); }
     }
     window.addEventListener('scroll', onScroll, {passive:true});
-    onScroll();
 
-    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var reveals = document.querySelectorAll('.reveal');
-    if(reduce || !('IntersectionObserver' in window)){
-      reveals.forEach(function(el){ el.classList.add('in'); });
-      return;
+    var toast = document.getElementById('toast'), tTimer = null;
+    function showToast(msg){
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if(tTimer){ clearTimeout(tTimer); }
+      tTimer = setTimeout(function(){ toast.classList.remove('show'); }, 2200);
     }
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-      });
-    }, {threshold:0.14, rootMargin:'0px 0px -8% 0px'});
-    reveals.forEach(function(el){ io.observe(el); });
+    document.querySelectorAll('[data-soon]').forEach(function(el){
+      function fire(e){ e.preventDefault(); showToast('MagPilot ' + el.getAttribute('data-soon') + ' is coming soon.'); }
+      el.addEventListener('click', fire);
+      el.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); fire(e); } });
+    });
+
+    route();
+    onScroll();
   })();
 </script>
 </body>
